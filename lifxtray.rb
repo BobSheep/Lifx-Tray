@@ -60,21 +60,25 @@ class LifxTray
     menu.show_all
     
     si.signal_connect('activate'){
-      if @light.on?
-        @light.turn_off!
-      else
-        @light.turn_on!
+      begin
+        if @light.on?
+          @light.turn_off!
+        else
+          @light.turn_on!
+        end
+      rescue LIFX::Light::MessageTimeout
+        puts "Timeout!"
       end
     }
     
     si.signal_connect('popup-menu') do |icon, button, time|
       menu.popup(nil, nil, button, time)
     end
-    
+  
   end
-
+  
   def choose_colour
-
+  
     cdia = Gtk::ColorSelectionDialog.new :title => "Pick a color"
     response = cdia.run
     
@@ -87,12 +91,9 @@ class LifxTray
     end
     cdia.destroy
   end
-  
+
 end
-
-
 
 Gtk.init
 tray = LifxTray.new
 Gtk.main
-
